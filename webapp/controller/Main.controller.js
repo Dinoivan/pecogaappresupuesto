@@ -67,7 +67,7 @@ sap.ui.define([
             
             this.setFooter();
             var userapi = new sap.ui.model.json.JSONModel();
-		    userapi.loadData("/services/userapi/attributes", "", false);
+		    userapi.loadData( this.getUrlBase() + "user-api/attributes", "", false);
             
         },
         fnAprobarTodos: function (oEvent) {

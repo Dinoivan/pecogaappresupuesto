@@ -3,12 +3,26 @@
   "authenticationMethod": "route",
   "routes": [
     {
-      "source": "^ODATA_FIORI_GATEWAY_CLONING/(.*)$",
-      "target": "ODATA_FIORI_GATEWAY_CLONING/$1",
-      "destination": "none",
+      "source": "^/sap/opu/odata/(.*)$",
+      "target": "/sap/opu/odata/$1",
+      "destination": "ODATA_FIORI_GATEWAY_CLONING",
       "authenticationType": "xsuaa",
       "csrfProtection": false
     },
+
+    {
+      "source": "^/ODATA_FIORI_GATEWAY/(.*)$",
+      "target": "$1",
+      "destination": "ODATA_FIORI_GATEWAY_CLONING",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
+    {
+      "source": "^/user-api(.*)",
+      "target": "$1",
+      "service": "sap-approuter-userapi"
+     },
+
     {
       "source": "^/resources/(.*)$",
       "target": "/resources/$1",
