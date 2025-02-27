@@ -2,6 +2,20 @@
   "welcomeFile": "/index.html",
   "authenticationMethod": "route",
   "routes": [
+
+    {
+      "source": "^/resources/(.*)$",
+      "target": "/resources/$1",
+      "authenticationType": "none",
+      "destination": "ui5"
+    },
+    {
+      "source": "^/ODATA_FIORI_GATEWAY/(.*)$",
+      "target": "$1",
+      "destination": "ODATA_FIORI_GATEWAY_CLONING",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
     {
       "source": "^/sap/opu/odata/(.*)$",
       "target": "/sap/opu/odata/$1",
@@ -9,10 +23,9 @@
       "authenticationType": "xsuaa",
       "csrfProtection": false
     },
-
     {
-      "source": "^/ODATA_FIORI_GATEWAY/(.*)$",
-      "target": "$1",
+      "source": "^sap/opu/odata/sap/(.*)$",
+      "target": "sap/opu/odata/sap/$1",
       "destination": "ODATA_FIORI_GATEWAY_CLONING",
       "authenticationType": "xsuaa",
       "csrfProtection": false
@@ -23,12 +36,6 @@
       "service": "sap-approuter-userapi"
      },
 
-    {
-      "source": "^/resources/(.*)$",
-      "target": "/resources/$1",
-      "authenticationType": "none",
-      "destination": "ui5"
-    },
     {
       "source": "^/test-resources/(.*)$",
       "target": "/test-resources/$1",

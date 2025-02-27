@@ -1,0 +1,15 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:core="sap.ui.core">
+    <Dialog id="dialogAprobar" title="Enviar decisión" class="sapUiResponsivePadding">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <Text text='Ha seleccionado "Aprobar presupuesto".' />
+                <Label text="Nota de decisión:" labelFor="txtNota" />
+                <TextArea id="txtNota" placeholder="Añadir nota (opcional)" rows="3" width="100%" />
+            </VBox>
+        </content>
+        <buttons>
+            <Button text="Enviar" type="Emphasized" press=".onConfirmAprobacion" />
+            <Button text="Cancelar" type="Transparent" press=".onCloseDialog" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

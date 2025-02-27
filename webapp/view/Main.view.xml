@@ -2,208 +2,231 @@
     xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:form="sap.ui.layout.form" xmlns:f="sap.ui.layout.form" xmlns:layout="sap.ui.layout">
     <SplitApp id="SplitApp">
         <masterPages>
-            <Page id="page" title="{i18n>view.Master.title} 
-                ({= ${'/WorkflowTaskCollection'}.length})">
+            <Page id="page">
+             <customHeader>
+                    <Bar> 
+                        <contentMiddle>
+                            <Title text="Escenario para FM ({AppData>/TasksCount})" />
+                        </contentMiddle>
+                        <contentRight>
+                            <Button id="btnSelectAll"
+                                    icon="sap-icon://multiselect-all"
+                                    press=".fnSelectAll"/>
+                        </contentRight>
+                    </Bar>
+                </customHeader>
                 <content>
-                    <List id="list" mode="MultiSelect"
-                        includeItemInSelection="false"
+
+                   <HBox justifyContent="Start" alignItems="Center">
+                        <Toolbar>
+                            <SearchField id="searchFieldd"
+                                width="100%"
+                                placeholder="Buscar"
+                                search=".onSearch"
+                                liveChange=".onSearch">
+                            </SearchField>
+                            <Button id="btnReload"
+                                icon="sap-icon://refresh"
+                                type="Transparent"
+                                press=".onReload"/>
+                        </Toolbar>
+                    </HBox>
+
+                    <List id="list" mode="SingleSelectMaster"
+                        includeItemInSelection="true"
                         selectionChange="fireSelectionChange"
                         items="{
-                            path: '/WorkflowTaskCollection',
-                            parameters: {
-                                $skip: '0',
-                                $top: '1000000',
-                                $inlinecount: 'allpages'
-                            }
+                            path: 'AppData>/Tasks'
+                           
                         }">
-                        <ObjectListItem id="MAIN_LIST_ITEM" type="Active" press="_handleItemPress" title="{PrNumber} {CreatedByName}"
-                            number="{path : 'Value', formatter : '.formatMoney'}" numberUnit="{Currency}">
-                            <firstStatus>
+                        <ObjectListItem id="MAIN_LIST_ITEM" 
+                        type="Active" 
+                        press="_handleItemPress" 
+                        title="{AppData>TaskTitle}">
+                      
+                        <attributes>
+                            <ObjectAttribute id="ATTR1" text="{AppData>CreatedByName}"/>
+                        </attributes>
+                          <firstStatus>
                                 <ObjectStatus id="ListStatusWiCreatedAt"
-                                    text="{path:'WiCreatedAt', formatter:'.formatFechaUTC'}"></ObjectStatus>
+                                    text="{path:'AppData>Priority', formatter:'.formatPriority'}"></ObjectStatus>
                             </firstStatus>
-                            <attributes>
-                                <ObjectAttribute id="ATTR1" text="{ItemDescriptions}"/>
-                            </attributes>
-                            <!-- @ExtensionPoint extListItemInfo: list item information -->
-                            <core:ExtensionPoint name="extListItemInfo"/>
-                        </ObjectListItem>
+                        <!-- @ExtensionPoint extListItemInfo: list item information -->
+                        <core:ExtensionPoint name="extListItemInfo"/>
+                    </ObjectListItem>
                     </List>
 
                 </content>
                 <footer>
-                    <Bar id="footer"></Bar>
+                    <Bar id="footer">
+                    <contentRight>
+                        <Button id="btnSort"
+                            icon="sap-icon://sort"
+                            type="Transparent"
+                            press=".onSortPress"/>
+                            <Menu id="sortMenu">
+                            <MenuItem text="Creado por (A en la parte superior)" press="onSortByCreatedBy"/>
+                            <MenuItem text="Prioridad (La prioridad más alta en la parte superior)" press="onSortByPriority"/>
+                            <MenuItem text="Título (A en la parte superior)" press="onSortByTitle"/>
+                            <MenuItem text="Fecha de creación (las más nuevas en la parte superior)" press="onSortByCreatedDate"/>
+                            <MenuItem text="Fecha de vencimiento (las más recientes en la parte superior)" press="onSortByDueDate"/>
+                        </Menu>
+                        <Button id="btnFilter"
+                            icon="sap-icon://filter"
+                            type="Transparent"
+                            press=".onFilter"/>
+                        <Button id="btnList"
+                            icon="sap-icon://list"
+                            type="Transparent"
+                            press=".onList"/>
+                    </contentRight> 
+                    </Bar>
                 </footer>
             </Page>
         </masterPages>
+
         <detailPages>
-            <Page id="WIDetail" class="sapUiFioriObjectPage" title="{i18n>view.Detail.title}">
-                <ObjectHeader id="Header" introPress="onAgentPress" introActive="true" title="{header>CreatedByName}" titleActive="true"
-                    number="{path: 'header>/Value', formatter: '.formatMoney'}" numberUnit="{header>/Currency}">
-                    <statuses>
-                        <ObjectStatus id="ObjectHeaderStatusWiCreatedAt" text="{path: 'header>/WiCreatedAt', formatter: '.formatFechaUTC'}"></ObjectStatus>
-                    </statuses>
-                    <attributes>
-                        <ObjectAttribute id="ObjectHeaderAttributeCreatedByName" text="Sustituto para {header>/TaskType}" press="onNamePress" active="true"></ObjectAttribute>
-                        <ObjectAttribute id="ObjectHeaderAttributeForwardedBy" text="{header>/ForwardedByName}" press="onForwardedPress" active="true"></ObjectAttribute>
-                        <ObjectAttribute id="ObjectHeaderAttributeSubstitutedBy" text="{header>/SubstitutingForName}" press="onSubstitutingPress" active="true"></ObjectAttribute>
+            <Page id="WIDetail" class="sapUiFioriObjectPage" title="Aprobar presupuesto">
+                 <ObjectHeader id="Header"
+                    title="{header>/TaskTitle}"
+                    titleActive="true"
+                    number="{path: 'header>/Value', formatter: '.formatMoney'}"
+                    numberUnit="{header>/Currency}">
+
+                     <attributes>
+                        <ObjectAttribute id="ObjectHeaderWorkflowSystem" text="{header>/CreatedByName}"></ObjectAttribute>
                     </attributes>
+
+                    <statuses>
+                        <ObjectStatus id="ObjectHeaderStatus" title="Estado" text="{path:  'header>/Status', formatter: '.formatStatus'}"></ObjectStatus>
+                        <ObjectStatus id="ObjectHeaderPriority" title="Prioridad" text="{path:'header>/Priority', formatter: '.formatPriority'}"></ObjectStatus>
+                    </statuses>
+
+                    <attributes>
+                        <ObjectAttribute id="ObjectHeaderAttributeCreatedOn" 
+                            text="{path: 'header>/CreatedOn', formatter: '.formatDate'}">
+                        </ObjectAttribute>
+                    </attributes>
+
                     <core:ExtensionPoint name="extHeaderInfo"/>
                 </ObjectHeader>
 
+
                 <IconTabBar id="tabBar" select="handleTabSelect">
                     <items>
-                        <IconTabFilter id="IconTabBarFilterPOInformation" icon="sap-icon://hint" iconColor="Default" key="contentInfo">
-                            <content>
-                                <form:Form id="InfoForm" class="detailInfoForm">
-                                    <form:layout>
-                                        <form:ResponsiveGridLayout columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false" />
-                                    </form:layout>
-                                    <form:formContainers>
-                                        <form:FormContainer>
-                                            <form:formElements>
-                                                <form:FormElement id="POInformationPOLabel">
-                                                    <form:label>
-                                                        <Label text="{i18n>view.PurchaseRequisition.purchaseRequisitionLabel}"></Label>
-                                                    </form:label>
-                                                    <form:fields>
-                                                        <Text text="{detail>/PrNumber}"></Text>
-                                                    </form:fields>
-                                                </form:FormElement>
-                                                <form:FormElement id="POInformationAccountAssignment">
-                                                    <form:label>
-                                                        <Label text="{i18n>view.PurchaseRequisition.accountAssignment}"></Label>
-                                                    </form:label>
-                                                    <form:fields>
-                                                        <VBox>
-                                                            <Text text="{detail>/HeaderAcc/AccountCategoryDescription} {detail>/HeaderAcc/AccountDescription} ({detail>/HeaderAcc/AccountNumber})"></Text>
-                                                            <Text text="Cuenta de mayor {detail>/HeaderAcc/GlAccountDescription} ({detail>/HeaderAcc/GlAccountNumber})"></Text>
-                                                        </VBox>    
-                                                    </form:fields>
-                                                </form:FormElement>
-                                                <form:FormElement id="POInformationDeliveryDate" visible="{= ${detail>/DeliveryDate} ? true : false}">
-                                                    <form:label>
-                                                        <Label text="{i18n>view.PurchaseRequisition.deliveryDate}"></Label>
-                                                    </form:label>
-                                                    <form:fields>
-                                                        <Text text="{path: 'detail>/DeliveryDate', formatter: '.formatFechaUTC'}"></Text>
-                                                    </form:fields>
-                                                </form:FormElement>
-                                                <form:FormElement id="POInformationPlant" visible="{= ${PlantName} ? true : false}">
-                                                    <form:label>
-                                                        <Label text="{i18n>view.PurchaseRequisition.plant}"></Label>
-                                                    </form:label>
-                                                    <form:fields>
-                                                        <Text text="{detail>/HdDeliveryAddress/PlantName} ({detail>/HdDeliveryAddress/Plant})"></Text>
-                                                    </form:fields>
-                                                </form:FormElement>
-                                            </form:formElements>
-                                        </form:FormContainer>
-                                    </form:formContainers>
-                                </form:Form>
-                            </content>
-                        </IconTabFilter>
-                        <IconTabFilter id="IconTabBarFilterPRNotes" key="Notes" count="{NumberOfNotes}"
+                          <IconTabFilter id="IconTabBarFilterPOInformation" icon="sap-icon://hint" iconColor="Default" key="contentInfo">
+                                 <content>
+                <VBox>
+                    <!-- Primera línea (Estimado(a) empleado(a):) -->
+                    <Text text="{path: 'TaskModel>/TaskData/d/Description/Description', formatter: '.splitFirstLine'}"/>
+
+                    <!-- Resto del texto -->
+                    <Text text="{path: 'TaskModel>/TaskData/d/Description/Description', formatter: '.splitRestOfText'}"/>
+                </VBox>
+
+                <!-- Espacio entre secciones usando un ToolbarSpacer -->
+                <Toolbar>
+                    <ToolbarSpacer/>
+                </Toolbar>
+
+                <VBox>
+                    <!-- Datos adicionales de cabecera -->
+                    <Title text="Datos adicionales de cabecera"/>
+                    <HBox>
+                        <VBox>
+                            <Label text="Proceso:"/>
+                            <Label text="Fecha Documento:"/>
+                            <Label text="Total Emisor:"/>
+                        </VBox>
+                        <VBox>
+                            <Text text="{DocPresupuestoModel>/ProcessT1}"/>
+                            <Text text="{path: 'DocPresupuestoModel>/Docdate', formatter: '.formatDate'}"/>
+                            <Text text="{DocPresupuestoModel>/Total}"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Espacio entre secciones -->
+               <!-- Espacio entre secciones usando un ToolbarSpacer -->
+                <Toolbar>
+                    <ToolbarSpacer/>
+                </Toolbar>
+
+                <VBox>
+                        <!-- Título -->
+                        <Title text="Textos Explicativos"/>
+                        
+                        <!-- Tabla con datos -->
+                        <Table id="idTextosExplicativos" visible="{= !!${DocPresupuestoModel>/EtTextoCab/results/0/Tdline}}">
+                            <columns>
+                                <Column>
+                                    <Text text="Texto"/>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{DocPresupuestoModel>/EtTextoCab/results/0/Tdline}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+
+                        <!-- Cuadro en blanco cuando no hay datos -->
+                        <VBox visible="{= !${DocPresupuestoModel>/EtTextoCab/results/0/Tdline}}" class="noDataContainer">
+                            <Text text="Sin datos"/>
+                        </VBox>
+                    </VBox>
+    
+                                </content>
+
+                    </IconTabFilter>
+                    
+                       <IconTabFilter id="IconTabBarFilterPRNotes" key="Notes" count="{NumberOfNotes}"
                             visible="{path : 'NumberOfNotes', formatter : 'ui.s2p.mm.requisition.approve.util.Conversions.notesVisibilityTrigger'}"
                             icon="sap-icon://notes">
-                            <List id="listNotes" showSeparators="None" inset="true" items="{path : 'detail>/Notes/results'}">
-                                <FeedListItem id="NoteTemplate"
-                                    sender="{detail>NoteIsApproverNote}"
-                                    icon="{detail>Thumbnail}"
-                                    timestamp="{detail>CreatedAt}"
-                                    senderPress="onNoteSenderPress" text="{detail>Text}" info="{detail>TypeDescription}"></FeedListItem>
-                            </List>
-                        </IconTabFilter>
-                        <IconTabFilter id="IconTabBarFilterPOApprovers" icon="sap-icon://account">
                             <content>
-                                <Table id="idProductsTable"
-                                inset="false"
-                                items="{
-                                    path: 'aprobadores>/'
-                                }">
-                                
-                                    <columns>
-                                        <Column
-                                            width="5em">
-                                            <Text text="Orden" />
-                                        </Column>
-                                        <Column>
-                                            <Text text="Nombre" />
-                                        </Column>
-                                        <Column>
-                                            <Text text="Usuario SAP" />
-                                        </Column>
-                                        <Column>
-                                            <Text text="Aprobado" />
-                                        </Column>
-                                    </columns>
-                                    <items>
-                                        <ColumnListItem>
-                                            <cells>
-                                                <ObjectStatus
-                                                    text="{aprobadores>Secuencia}" state="{path:'aprobadores>Aprobado', formatter:'_Formatter.color'}" />
-                                                <ObjectStatus
-                                                    text="{aprobadores>Nombre}" state="{path:'aprobadores>Aprobado', formatter:'_Formatter.color'}"/>
-                                                <ObjectStatus
-                                                    text="{aprobadores>IdSap}" state="{path:'aprobadores>Aprobado', formatter:'_Formatter.color'}"/>
-                                                <ObjectStatus
-                                                    text="{aprobadores>Aprobado}" state="Success"/>
-                                            </cells>
-                                        </ColumnListItem>
-                                    </items>
-                                </Table>
+                                <VBox>
+                                    <Title text="Posiciones" level="H2" />
+                                    <Table id="idPosicionesTable" visibleRowCount="5" selectionMode="MultiToggle"
+                                        items="{DocPresupuestoModel>/EtDetalle/results}">
+                                        <columns>
+                                            <Column>
+                                                <Label text="" />
+                                                <CheckBox id="selectAllCheckbox" select="onSelectAll" />
+                                            </Column>
+                                            <Column>
+                                                <Label text="Centro Gestor" />
+                                            </Column>
+                                            <Column>
+                                                <Label text="Posición Presupuestaria" />
+                                            </Column>
+                                            <Column>
+                                                <Label text="Importe" />
+                                            </Column>
+                                            <Column>
+                                                <Label text="Texto" />
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem>
+                                                <cells>
+                                                    <CheckBox />
+                                                    <Text text="{DocPresupuestoModel>Fundsctr}" />
+                                                    <Text text="{DocPresupuestoModel>Cmmtitem}" />
+                                                    <Text text="{DocPresupuestoModel>Subtotal}" />
+                                                    <Text text="{DocPresupuestoModel>Text50}" />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </VBox>
                             </content>
-					
-				</IconTabFilter>
+                        </IconTabFilter>
+
+
                     </items>
                 </IconTabBar>
-
-                <Table id="itemsTable" items="{detail>/HeaderItemDetails/results}" noDataText="{i18n>view.PurchaseRequisition.placeholder}" class="detailControlPadding" growing="true"
-                    growingScrollToLoad="false"
-                    headerText="{i18n>view.PurchaseRequisition.multipleItems} ({detail>/NumberOfItems})">
-                    <columns>
-                        <Column id="ItemsTableColumnDescription" hAlign="Left">
-                            <header>
-                                <Label text="{i18n>view.PurchaseRequisition.descriptionLabel}"></Label>
-                            </header>
-                        </Column>
-                        <Column id="ItemsTableColumnItemCategory" hAlign="Left" demandPopin="true" minScreenWidth="Medium">
-                            <header>
-                                <Label text="{i18n>view.PurchaseRequisition.itemCategory}"></Label>
-                            </header>
-                        </Column>
-                        <Column id="ItemsTableColumnQuantity" hAlign="Right" demandPopin="true" minScreenWidth="Medium">
-                            <header>
-                                <Label text="{i18n>view.PurchaseRequisition.quantity}"></Label>
-                            </header>
-                        </Column>
-                        <Column id="ItemsTableColumnSubtotal" hAlign="Right" demandPopin="true" minScreenWidth="Medium">
-                            <header>
-                                <Label text="{i18n>view.PurchaseRequisition.subtotal}"></Label>
-                            </header>
-                        </Column>
-                    </columns>
-                    <items>
-                        <ColumnListItem type="Navigation" press="navToItemDetails">
-                            <cells>
-                                <layout:VerticalLayout width="100%">
-                                    <ObjectIdentifier title="{detail>Description}"></ObjectIdentifier>
-                                </layout:VerticalLayout>
-                                <Text
-                                    text="{detail>ItemCategoryDescription}"></Text>
-                                <ObjectNumber number="{detail>Quantity}"
-                                    numberUnit="{detail>UnitDescription}"></ObjectNumber>
-                                <ObjectNumber
-                                    number="{detail>Value}"
-                                    numberUnit="{detail>Currency}"></ObjectNumber>
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
-
-                <footer>
-                    <Bar id="detailFooter"></Bar>
-                </footer>
             </Page>
 
         </detailPages>

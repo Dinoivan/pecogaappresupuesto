@@ -17,27 +17,44 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "sap/opu/odata/IWPGW/TASKPROCESSING;mo;v=2/",
+        "uri": "/sap/opu/odata/IWPGW/TASKPROCESSING;mo;v=2/",
         "type": "OData",
         "settings": {
           "annotations": [],
           "localUri": "localService/metadata.xml",
           "odataVersion": "2.0"
         }
+      },
+      "budgetService": {
+        "uri": "/sap/opu/odata/sap/Z_FM_FM_GET_DOC_PRESUPUESTO_V7_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata_budget.xml",
+          "odataVersion": "2.0"
+        }
       }
     },
     "crossNavigation": {
-            "inbounds": {
-                "intent1": {
-                    "signature": {
-                        "parameters": {},
-                        "additionalParameters": "allowed"
-                    },
-                    "semanticObject": "Dynamic",
-                    "action": "display"
-                }
-            }
-        }
+  "inbounds": {
+    "dynamicTile": {
+      "signature": {
+        "parameters": {},
+        "additionalParameters": "allowed"
+      },
+      "semanticObject": "AprobacionPresupuesto",
+      "action": "display",
+      "title": "Aprobación de FM",
+      "subTitle": "My Inbox",
+      "icon": "sap-icon://appointment-2",
+      "indicatorDataSource": {
+        "dataSource": "mainService", 
+        "path": "/7520b8eb-8965-460c-a6be-89666a29c948.pecogaappresupuesto.pecogaappresupuesto/~cda2b7c1-e38b-42f9-982f-da11fa3f2df7~/sap/opu/odata/IWPGW/TASKPROCESSING;mo;v=2/TaskCollection?$inlinecount=allpages&$top=0&$filter=TaskDefinitionID eq 'TS90300006' and SAP__Origin eq 'LOCAL_PGW' and (Status eq 'READY' or Status eq 'RESERVED' or Status eq 'IN_PROGRESS' or Status eq 'EXECUTED')",
+        "refresh": 5
+      }
+    }
+  }
+}
   },
   "sap.ui": {
     "technology": "UI5",
@@ -77,6 +94,13 @@
       },
       "": {
         "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "useBatch": false
+        }
+      },
+      "budgetModel": {
+        "dataSource": "budgetService",
         "preload": true,
         "settings": {
           "useBatch": false

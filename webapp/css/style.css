@@ -1,1 +1,10 @@
 /* Enter your custom styles here */
+
+.noDataContainer {
+    min-height: 200px;  /* Ajusta según el tamaño que necesites */
+    background-color: white; /* Mantiene el fondo blanco */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc; /* Borde para que se vea igual a la tabla */
+}
